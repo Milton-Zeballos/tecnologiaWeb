@@ -3,10 +3,16 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\ProductoController;
 
-Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
+Route::get('/', [LoginController::class, 'Index'])->name('login');
 Route::post('/', [LoginController::class, 'login']);
+Route::post('/registro', [LoginController::class, 'register'])->name('register');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::resource('clientes', ClienteController::class)->middleware('auth');
+Route::resource('productos', ProductoController::class)->middleware('auth');
 
 Route::get('/panel', function () {
     return view('welcome');

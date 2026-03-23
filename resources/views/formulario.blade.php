@@ -17,7 +17,7 @@
                 <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese su nombre" required>
             </div>
             <button type="submit" class="btn btn-primary mt-3">Enviar</button>
-            <a href="/panel" class="btn btn-secondary mt-3">Regresar</a>
+            <a href="/clientes" class="btn btn-secondary mt-3">Regresar</a>
         </form>
     </div>
 @endsection
