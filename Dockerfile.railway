@@ -1,5 +1,5 @@
-# Imagen para Render.com (PHP built-in server + puerto PORT)
-# En Render: Web Service → Docker → Dockerfile path: Dockerfile.render
+# Railway: escucha en $PORT (php artisan serve). PostgreSQL vía DATABASE_URL.
+# En el panel: Settings → Dockerfile path → Dockerfile.railway
 
 FROM php:8.2-cli-bookworm
 
@@ -25,9 +25,6 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction \
     && chmod -R 775 storage bootstrap/cache \
     && test -f vendor/autoload.php
 
-EXPOSE 10000
-
 ENV LOG_CHANNEL=stderr
 
-# Render define PORT; el script genera APP_KEY si falta y escribe logs a stderr
 CMD ["/usr/local/bin/entrypoint-serve.sh"]

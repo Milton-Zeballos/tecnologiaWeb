@@ -9,7 +9,9 @@ fi
 export LOG_CHANNEL="${LOG_CHANNEL:-stderr}"
 
 php artisan config:clear 2>/dev/null || true
-php artisan migrate --force || true
+if ! php artisan migrate --force; then
+  echo "ganatelo: migrate falló — revisá DATABASE_URL y DB_SSLMODE (PostgreSQL)." >&2
+fi
 php artisan storage:link --force 2>/dev/null || true
 
 exec php artisan serve --host=0.0.0.0 --port="${PORT:-10000}"
