@@ -15,6 +15,9 @@ services:
         value: "false"
       - key: LOG_LEVEL
         value: error
+      - key: SESSION_DRIVER
+        value: cookie
+      # PostgreSQL en Render suele exigir SSL; si migrate falla por conexión, añadí DB_SSLMODE=require en el panel.
       # APP_KEY: generar en el panel de Render o: php artisan key:generate --show
       # APP_URL: https://<nombre-del-servicio>.onrender.com
       # DB_* o DATABASE_URL: ver docs/RENDER.md

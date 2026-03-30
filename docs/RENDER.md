@@ -31,6 +31,9 @@ Si en Render dejás el **Dockerfile path** por defecto (`Dockerfile`), la imagen
 | `APP_URL` | `https://TU-SERVICIO.onrender.com` (la da Render al crear el servicio; si cambia el nombre, actualizá esto). |
 | `APP_ENV` | `production` |
 | `APP_DEBUG` | `false` |
+| `SESSION_DRIVER` | `cookie` (recomendado: evita depender de la tabla `sessions` si algo falla en migraciones o en la BD) |
+
+Si ves **500** tras desplegar, suele ser: **falta `APP_KEY`**, **BD mal enlazada** (`DATABASE_URL` o `DB_*`), o **PostgreSQL sin SSL** — en el Web Service añadí `DB_SSLMODE` = `require` (Render lo suele necesitar). Revisá también los **logs** del servicio (pestaña Logs) y, solo para depurar, podés poner `APP_DEBUG=true` un momento para ver el error (luego volvé a `false`).
 
 5. **Base de datos**
 

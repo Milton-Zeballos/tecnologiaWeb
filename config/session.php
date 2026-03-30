@@ -18,7 +18,8 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'database'),
+    // Por defecto cookie: no exige tabla `sessions` ni BD en el primer request (evita 500 si migraciones fallan o falta DB; p. ej. Render).
+    'driver' => env('SESSION_DRIVER', 'cookie'),
 
     /*
     |--------------------------------------------------------------------------
