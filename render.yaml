@@ -1,0 +1,20 @@
+# Blueprint opcional para Render (Infrastructure as Code)
+# Dashboard: New → Blueprint → conectar repo con este archivo
+# Ajustar nombre del servicio y región según tu cuenta.
+
+services:
+  - type: web
+    name: ganatelo
+    runtime: docker
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: LOG_LEVEL
+        value: error
+      # APP_KEY: generar en el panel de Render o: php artisan key:generate --show
+      # APP_URL: https://<nombre-del-servicio>.onrender.com
+      # DB_* o DATABASE_URL: ver docs/RENDER.md

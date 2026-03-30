@@ -1,0 +1,77 @@
+# Despliegue en VPS / nube (producción)
+# En el servidor, con .env ya configurado (APP_URL, APP_KEY, contraseñas):
+#   docker compose -f docker-compose.cloud.yml up -d --build
+#
+# Local seguís usando: docker compose up -d  (puerto 8000)
+
+services:
+
+  app:
+    build: .
+    image: ganatelo-app:latest
+    container_name: ganatelo_app
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www/html
+    env_file:
+      - .env
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-laravel}
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      APP_ENV: production
+      APP_DEBUG: "false"
+      SESSION_DRIVER: cookie
+      SESSION_SECURE_COOKIE: "false"
+      SESSION_SAME_SITE: lax
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:5.7
+    container_name: ganatelo_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+    volumes:
+      - ganatelo_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  scheduler:
+    image: ganatelo-app:latest
+    container_name: ganatelo_scheduler
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    env_file:
+      - .env
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-laravel}
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      APP_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+      app:
+        condition: service_started
+    entrypoint: []
+    command: ["php", "artisan", "schedule:work"]
+
+volumes:
+  ganatelo_db_data:

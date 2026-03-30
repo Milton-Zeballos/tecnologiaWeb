@@ -1,0 +1,41 @@
+services:
+
+  app:
+    build: .
+    container_name: laravel_app
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: laravel
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      # Evita 419 (CSRF) cuando el volumen Windows no deja escribir sesiones en disco
+      SESSION_DRIVER: cookie
+      SESSION_SECURE_COOKIE: "false"
+      SESSION_SAME_SITE: lax
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:5.7
+    container_name: laravel_db
+    # Obligatorio para MySQL 5.7 oficial: contraseña de root al crear el volumen la primera vez
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "laravel"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  db_data:
