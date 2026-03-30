@@ -27,14 +27,13 @@ Si en Render dejás el **Dockerfile path** por defecto (`Dockerfile`), la imagen
 
 | Clave | Valor |
 |-------|--------|
-| `APP_KEY` | Generá en tu PC: `php artisan key:generate --show` y pegá la línea `base64:...` |
+| `APP_KEY` | Generá en tu PC: `php artisan key:generate --show` y pegá `base64:...`. **Opcional:** el contenedor puede generar una al arrancar (cada redeploy invalida sesiones). |
 | `APP_URL` | `https://TU-SERVICIO.onrender.com` (la da Render al crear el servicio; si cambia el nombre, actualizá esto). |
 | `APP_ENV` | `production` |
 | `APP_DEBUG` | `false` |
 | `SESSION_DRIVER` | `cookie` (recomendado: evita depender de la tabla `sessions` si algo falla en migraciones o en la BD) |
-| `APP_KEY` | **Opcional si usás el `Dockerfile` actual:** si no la definís, el contenedor genera una clave al arrancar (cada redeploy invalida sesiones). Si la definís vos en el panel, queda fija entre deploys. |
 
-Si ves **500**, lo habitual era **`APP_KEY` vacía** (Laravel no puede cifrar sesión/CSRF). El `Dockerfile` ahora escribe logs en **stderr**, así que el mensaje real debería verse en **Logs** del servicio en Render. Comprobá también **`DATABASE_URL`** / **`DB_*`** y, con PostgreSQL, **`DB_SSLMODE=require`** si falla la conexión. Para depurar un rato podés usar `APP_DEBUG=true` y luego volver a `false`.
+Si ves **500** al entrar a la web: suele ser **`APP_KEY`** o **BD**. Si es **solo al loguearte o registrarte**, casi siempre falta **`DATABASE_URL`** (o `DB_*`) bien enlazada a tu PostgreSQL de Render, o **`DB_SSLMODE=require`**, o las migraciones no corrieron (revisá **Logs** al arrancar el contenedor: debería ejecutarse `migrate`). El `Dockerfile` escribe Laravel en **stderr**. Para depurar un rato podés usar `APP_DEBUG=true` y luego volver a `false`.
 
 5. **Base de datos**
 
@@ -45,7 +44,7 @@ Si ves **500**, lo habitual era **`APP_KEY` vacía** (Laravel no puede cifrar se
      - `DATABASE_URL` = URL que te da Render (formato `postgresql://...`), **o**
      - `DB_CONNECTION=pgsql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` según el panel.
 
-   Luego, en el servicio web (shell o deploy command), ejecutá migraciones una vez si no usás el `CMD` del Dockerfile que ya las intenta al arrancar.
+   Las migraciones se ejecutan **al arrancar el contenedor** (`Dockerfile` y `Dockerfile.render`). Si fallan, verás el error en **Logs** (y un aviso si no puede conectar a la BD).
 
    **Nota:** Tu proyecto está pensado para **MySQL**; Laravel suele migrar bien a **PostgreSQL** con el driver `pgsql`. Si alguna migración falla, revisá tipos específicos de MySQL.
 
