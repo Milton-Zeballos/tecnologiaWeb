@@ -32,8 +32,9 @@ Si en Render dejás el **Dockerfile path** por defecto (`Dockerfile`), la imagen
 | `APP_ENV` | `production` |
 | `APP_DEBUG` | `false` |
 | `SESSION_DRIVER` | `cookie` (recomendado: evita depender de la tabla `sessions` si algo falla en migraciones o en la BD) |
+| `APP_KEY` | **Opcional si usás el `Dockerfile` actual:** si no la definís, el contenedor genera una clave al arrancar (cada redeploy invalida sesiones). Si la definís vos en el panel, queda fija entre deploys. |
 
-Si ves **500** tras desplegar, suele ser: **falta `APP_KEY`**, **BD mal enlazada** (`DATABASE_URL` o `DB_*`), o **PostgreSQL sin SSL** — en el Web Service añadí `DB_SSLMODE` = `require` (Render lo suele necesitar). Revisá también los **logs** del servicio (pestaña Logs) y, solo para depurar, podés poner `APP_DEBUG=true` un momento para ver el error (luego volvé a `false`).
+Si ves **500**, lo habitual era **`APP_KEY` vacía** (Laravel no puede cifrar sesión/CSRF). El `Dockerfile` ahora escribe logs en **stderr**, así que el mensaje real debería verse en **Logs** del servicio en Render. Comprobá también **`DATABASE_URL`** / **`DB_*`** y, con PostgreSQL, **`DB_SSLMODE=require`** si falla la conexión. Para depurar un rato podés usar `APP_DEBUG=true` y luego volver a `false`.
 
 5. **Base de datos**
 
