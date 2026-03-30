@@ -1,6 +1,12 @@
 FROM php:8.2-apache
 
-RUN docker-php-ext-install pdo pdo_mysql
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git unzip libzip-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-install pdo pdo_mysql zip
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN a2enmod rewrite
 
@@ -10,6 +16,11 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 WORKDIR /var/www/html
 
 COPY . /var/www/html
+
+RUN composer install --no-dev --optimize-autoloader --no-interaction \
+    && mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache/data storage/logs bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache \
+    && test -f vendor/autoload.php
 
 RUN chown -R www-data:www-data /var/www/html
 

@@ -11,7 +11,7 @@ Render permite subir el proyecto desde **GitHub** y generar una **URL pública**
 | `Dockerfile.render` | Build en la nube: instala Composer, dependencias y arranca `php artisan serve` en el puerto que define Render (`PORT`). |
 | `render.yaml` | Opcional: despliegue tipo “Blueprint” desde el repo. |
 
-Tu `Dockerfile` local (Apache) sigue sirviendo para PC/Docker Desktop; **Render** usa **`Dockerfile.render`** para no pelear con Apache y el puerto `PORT`.
+Si en Render dejás el **Dockerfile path** por defecto (`Dockerfile`), la imagen ahora también ejecuta **`composer install`** en el build (antes no, y por eso faltaba `vendor/`). Para el plan free, **`Dockerfile.render`** suele ser más simple: `php artisan serve` y el puerto `PORT` de Render. Cualquiera de los dos es válido si el path en el panel coincide con el archivo que quieres usar.
 
 ---
 
